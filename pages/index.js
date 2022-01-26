@@ -93,9 +93,14 @@ export default function PaginaInicial() {
             {/* Formulário */}
             <Box
               as="form"
+              onSubmit={(e) => {
+                e.preventDefault();
+                console.log('enviou')
+              }}
               styleSheet={{
                 display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                 width: { xs: '100%', sm: '50%' }, textAlign: 'center', marginBottom: '32px',
+                backgroundColor: 'black', borderRadius: '10px', padding: '10px',
               }}
             >
               <Title tag="h2">Boas vindas de volta!</Title>
