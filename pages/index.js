@@ -1,36 +1,9 @@
 import { Box, Button, Text, TextField, Image } from '@skynexui/components'
 import appConfig from '../config.json'
 import { React, useState } from 'react'
+import { useRouter } from 'next/router'
 
-function  GlobalStyle() {
-    return (
-        <style global jsx>
-            {`
-                * {
-                    margin: 0;
-                    border: 0;
-                    box-sizing: border-box;
-                    list-style: none;
-                }
-                body {
-                    font-family: 'Open Sans' , sans-serif;
 
-                }
-                html, body, #__next {
-                    min-height: 100vh;
-                    display: flex;
-                    flex: 1;
-                }
-                #__next {
-                    flex: 1;
-                }
-                #__next > * {
-                    flex: 1;
-                }
-            `}
-        </style>
-    )
-}
 
 function Title(props) {
     const Tag = props.tag || 'h1';
@@ -48,25 +21,16 @@ function Title(props) {
     )
 }
 
-// function HomePage() {
-//     return (
-//     <div>
-//         <GlobalStyle />
-//         <Title tag="h1">Boas vindas!</Title>
-//         <h2>Discord Alura</h2>
-        
-//     </div>
-//     )
-// }
-
-// export default HomePage
-
 export default function PaginaInicial() {
-    const [username, setUsername] = useState('');
+    const [username, setUsername] = useState('menezesmario');
+    const router = useRouter();
+
+    const usernameOk = username.length > 2;
+
+    
   
     return (
       <>
-        <GlobalStyle />
         <Box
           styleSheet={{
             display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -94,13 +58,13 @@ export default function PaginaInicial() {
             <Box
               as="form"
               onSubmit={(e) => {
-                e.preventDefault();
-                console.log('enviou')
+                e.preventDefault();                
+                usernameOk ? router.push('/chat') : '' ;   
               }}
               styleSheet={{
                 display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                 width: { xs: '100%', sm: '50%' }, textAlign: 'center', marginBottom: '32px',
-                backgroundColor: 'black', borderRadius: '10px', padding: '10px',
+                
               }}
             >
               <Title tag="h2">Boas vindas de volta!</Title>
@@ -128,6 +92,7 @@ export default function PaginaInicial() {
               <Button
                 type='submit'
                 label='Entrar'
+                disabled={!usernameOk}
                 fullWidth
                 buttonColors={{
                   contrastColor: appConfig.theme.colors.neutrals["000"],
@@ -161,7 +126,8 @@ export default function PaginaInicial() {
                   borderRadius: '50%',
                   marginBottom: '16px',
                 }}
-                src={`https://github.com/${username}.png`}
+                src={ usernameOk ? `https://github.com/${username}.png` : `` }
+                //usernameOk ? router.push('/chat') : '' ;
               />
               <Text
                 variant="body4"
