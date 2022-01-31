@@ -1,9 +1,43 @@
 import { Box, Text, TextField, Image, Button } from '@skynexui/components';
-import React from 'react';
+import React, { useState } from 'react';
 import appConfig from '../config.json';
+import { createClient } from '@supabase/supabase-js'
+
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzQ5MjIzMiwiZXhwIjoxOTU5MDY4MjMyfQ.hIaSNnB5BoDnuTKJtTqiD-iw83g44xn0qOShw2tXOdM'
+const SUPABASE_URL = 'https://zkfrvvvcxeekqnnljcma.supabase.co';
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+
+
+
 
 export default function ChatPage() {
     // Sua lógica vai aqui
+    const [message, setMessage] = useState('');
+    const [messagesList, setMessagesList] = useState([]);
+
+    const supabaseData = supabaseClient
+    .from('messages')
+    .select('*')
+    .then((data) => {
+        console.log('Dados consulta', data)
+    });
+
+    console.log(supabaseData)
+
+    function handleNewMessage(newMessage) {
+        const message = {
+            id: messagesList.length + 1,
+            from: 'menezesmario',
+            text: newMessage,
+        }
+        setMessagesList([
+            message,
+            ...messagesList,
+        ])
+        setMessage('');  
+    }
+
 
     // ./Sua lógica vai aqui
     return (
@@ -43,8 +77,15 @@ export default function ChatPage() {
                         padding: '16px',
                     }}
                 >
-
-                    {/* <MessageList mensagens={[]} /> */}
+                    <MessageList messages={messagesList} />
+                    {/* {messagesList.map((currentMessage) => {
+                        return (
+                            
+                            <li key={currentMessage.id}>
+                                {currentMessage.from}: {currentMessage.text}
+                            </li>
+                        )
+                    })} */}
 
                     <Box
                         as="form"
@@ -54,7 +95,20 @@ export default function ChatPage() {
                         }}
                     >
                         <TextField
-                            placeholder="Insira sua mensagem aqui..."
+                            value={message}
+                            onChange={(e) => {
+                                const value = e.target.value
+                                setMessage(value);
+                            }}
+                            onKeyPress={(e) => {
+                                if(e.key === "Enter") {
+                                    e.preventDefault();
+
+                                    handleNewMessage(message);
+                                }
+                                
+                            }}
+                            placeholder="Insira sua message aqui..."
                             type="textarea"
                             styleSheet={{
                                 width: '100%',
@@ -93,7 +147,7 @@ function Header() {
 }
 
 function MessageList(props) {
-    console.log('MessageList', props);
+    console.log(props.messagesList)
     return (
         <Box
             tag="ul"
@@ -106,9 +160,10 @@ function MessageList(props) {
                 marginBottom: '16px',
             }}
         >
-
-            <Text
-                key={mensagem.id}
+            {props.messages.map((message) => {
+                return (
+                    <Text
+                key={message.id}
                 tag="li"
                 styleSheet={{
                     borderRadius: '5px',
@@ -135,7 +190,7 @@ function MessageList(props) {
                         src={`https://github.com/vanessametonini.png`}
                     />
                     <Text tag="strong">
-                        {mensagem.de}
+                        {message.from}
                     </Text>
                     <Text
                         styleSheet={{
@@ -148,8 +203,13 @@ function MessageList(props) {
                         {(new Date().toLocaleDateString())}
                     </Text>
                 </Box>
-                {mensagem.texto}
+                {message.text}
             </Text>
+
+                )
+            })}
+
+            
         </Box>
     )
 }
